@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YOCTRON v0.A1.03 | Minimal Restaurant Management</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Monochromatic Palette - Sophisticated & Minimal */
+            --mono-black: #000000;
+            --mono-charcoal: #1a1a1a;
+            --mono-dark-gray: #2d2d2d;
+            --mono-gray: #4a4a4a;
+            --mono-medium-gray: #6e6e6e;
+            --mono-light-gray: #9e9e9e;
+            --mono-silver: #c4c4c4;
+            --mono-pale-gray: #e0e0e0;
+            --mono-off-white: #f5f5f5;
+            --mono-white: #ffffff;
+            --mono-beige: #f5f1e8;
+
+            /* Subtle Accent for Interactive States */
+            --accent-subtle: rgba(0, 0, 0, 0.05);
+            --accent-hover: rgba(0, 0, 0, 0.08);
+            --accent-active: rgba(0, 0, 0, 0.12);
+
+            /* Shadows - Ultra Subtle */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.08);
+            --shadow-xl: 0 8px 32px rgba(0, 0, 0, 0.10);
+
+            /* Typography */
+            --font-system: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --transition: cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+
+        body {
+            font-family: var(--font-system);
+            background: var(--mono-off-white);
+            color: var(--mono-charcoal);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+        }
+
+        /* LAYOUT */
+        .app-container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* SIDEBAR - Minimal & Elegant */
+        .sidebar {
+            width: 240px;
+            background: var(--mono-white);
+            border-right: 1px solid var(--mono-pale-gray);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            z-index: 50;
+        }
+
+        .logo {
+            padding: 32px 24px;
+            border-bottom: 1px solid var(--mono-pale-gray);
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--mono-black);
+            letter-spacing: -0.02em;
+            text-transform: uppercase;
+        }
+
+        .logo-version {
+            font-size: 9px;
+            color: var(--mono-medium-gray);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 4px;
+        }
+
+        .nav-menu {
+            flex: 1;
+            padding: 16px 12px;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            padding: 12px 16px;
+            margin-bottom: 2px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            font-size: 13px;
+            color: var(--mono-gray);
+            letter-spacing: -0.01em;
+        }
+
+        .nav-item:hover {
+            background: var(--accent-subtle);
+            color: var(--mono-charcoal);
+        }
+
+        .nav-item.active {
+            background: var(--mono-charcoal);
+            color: var(--mono-white);
+        }
+
+        .nav-icon {
+            font-size: 16px;
+            opacity: 0.7;
+        }
+
+        .nav-item.active .nav-icon {
+            opacity: 1;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            flex: 1;
+            margin-left: 240px;
+            overflow-y: auto;
+            padding: 24px;
+            background: var(--mono-off-white);
+        }
+
+        .top-bar {
+            background: var(--mono-white);
+            padding: 20px 24px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--mono-pale-gray);
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--mono-black);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--mono-charcoal);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        .status-text {
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--mono-medium-gray);
+        }
+
+        /* CARDS - Minimal & Clean */
+        .card {
+            background: var(--mono-white);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid var(--mono-pale-gray);
+        }
+
+        .stat-card {
+            background: var(--mono-white);
+            border-radius: 8px;
+            padding: 24px;
+            border: 1px solid var(--mono-pale-gray);
+            transition: all 0.3s var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--mono-medium-gray);
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            color: var(--mono-black);
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            background: var(--accent-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 16px;
+        }
+
+        /* BUTTONS - Minimal & Precise */
+        .btn {
+            padding: 12px 24px;
+            border-radius: 6px;
+            border: none;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s var(--transition);
+            letter-spacing: -0.01em;
+            font-family: var(--font-system);
+        }
+
+        .btn-primary {
+            background: var(--mono-charcoal);
+            color: var(--mono-white);
+            border: 1px solid var(--mono-charcoal);
+        }
+
+        .btn-primary:hover {
+            background: var(--mono-black);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--mono-white);
+            color: var(--mono-charcoal);
+            border: 1px solid var(--mono-pale-gray);
+        }
+
+        .btn-secondary:hover {
+            background: var(--accent-subtle);
+            border-color: var(--mono-silver);
+        }
+
+        .btn-success {
+            background: var(--mono-black);
+            color: var(--mono-white);
+            border: 1px solid var(--mono-black);
+        }
+
+        .btn-success:hover {
+            background: var(--mono-charcoal);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* MENU ITEMS - Ultra Clean */
+        .item-card {
+            background: var(--mono-white);
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            transition: all 0.2s var(--transition);
+            border: 1px solid var(--mono-pale-gray);
+        }
+
+        .item-card:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--mono-silver);
+        }
+
+        .item-image {
+            width: 64px;
+            height: 64px;
+            border-radius: 4px;
+            object-fit: cover;
+            background: var(--mono-beige);
+            filter: grayscale(100%);
+            opacity: 0.8;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-category {
+            font-size: 10px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--mono-light-gray);
+            margin-bottom: 4px;
+        }
+
+        .item-name {
+            font-weight: 500;
+            font-size: 14px;
+            margin-bottom: 4px;
+            color: var(--mono-charcoal);
+            letter-spacing: -0.01em;
+        }
+
+        .item-price {
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--mono-black);
+            letter-spacing: -0.01em;
+        }
+
+        .item-add-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--mono-charcoal);
+            color: var(--mono-white);
+            border: none;
+            font-size: 18px;
+            font-weight: 300;
+            cursor: pointer;
+            transition: all 0.2s var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .item-add-btn:hover {
+            background: var(--mono-black);
+            transform: scale(1.1);
+        }
+
+        /* BILLING LAYOUT */
+        .billing-layout {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 20px;
+            height: calc(100vh - 160px);
+        }
+
+        .items-panel {
+            background: var(--mono-white);
+            border-radius: 8px;
+            padding: 24px;
+            overflow-y: auto;
+            border: 1px solid var(--mono-pale-gray);
+        }
+
+        .bill-panel {
+            background: var(--mono-white);
+            border-radius: 8px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--mono-pale-gray);
+        }
+
+        .bill-items {
+            flex: 1;
+            overflow-y: auto;
+            margin: 20px 0;
+        }
+
+        .bill-item {
+            padding: 14px 0;
+            border-bottom: 1px solid var(--mono-pale-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bill-item:last-child {
+            border-bottom: none;
+        }
+
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--accent-subtle);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .qty-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            border: none;
+            background: var(--mono-white);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            color: var(--mono-charcoal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qty-btn:hover {
+            background: var(--mono-charcoal);
+            color: var(--mono-white);
+        }
+
+        .bill-total {
+            border-top: 2px solid var(--mono-charcoal);
+            padding-top: 16px;
+            margin-top: 16px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--mono-gray);
+        }
+
+        .total-row:last-child {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--mono-black);
+            margin-top: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        /* TABLES */
+        .table-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 16px;
+        }
+
+        .table-card {
+            background: var(--mono-white);
+            border-radius: 6px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s var(--transition);
+            border: 1px solid var(--mono-pale-gray);
+        }
+
+        .table-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .table-card.occupied {
+            background: var(--mono-beige);
+            border-color: var(--mono-silver);
+        }
+
+        .table-number {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+            color: var(--mono-black);
+        }
+
+        .table-capacity {
+            font-size: 12px;
+            color: var(--mono-medium-gray);
+            margin-bottom: 8px;
+        }
+
+        .table-status {
+            font-size: 10px;
+            text-transform: uppercase;
+            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 8px;
+            letter-spacing: 0.05em;
+        }
+
+        .table-status.available {
+            background: var(--accent-subtle);
+            color: var(--mono-gray);
+        }
+
+        .table-status.occupied {
+            background: var(--mono-charcoal);
+            color: var(--mono-white);
+        }
+
+        /* KOT CARDS */
+        .kot-card {
+            background: var(--mono-white);
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-left: 3px solid var(--mono-charcoal);
+            border: 1px solid var(--mono-pale-gray);
+            border-left: 3px solid var(--mono-charcoal);
+        }
+
+        .kot-card.priority {
+            border-left-color: var(--mono-black);
+            background: var(--mono-beige);
+        }
+
+        .kot-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--mono-pale-gray);
+        }
+
+        .kot-items {
+            margin: 16px 0;
+        }
+
+        .kot-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            font-size: 14px;
+            color: var(--mono-charcoal);
+        }
+
+        /* FORM ELEMENTS */
+        input,
+        select {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 6px;
+            border: 1px solid var(--mono-pale-gray);
+            font-size: 13px;
+            font-family: var(--font-system);
+            font-weight: 400;
+            transition: all 0.2s;
+            background: var(--mono-white);
+            color: var(--mono-charcoal);
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--mono-charcoal);
+            box-shadow: 0 0 0 3px var(--accent-subtle);
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--mono-medium-gray);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--mono-white);
+            border-radius: 8px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+        }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--mono-charcoal);
+            color: var(--mono-white);
+            padding: 14px 20px;
+            border-radius: 6px;
+            box-shadow: var(--shadow-xl);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s var(--transition);
+            z-index: 10000;
+            font-weight: 500;
+            font-size: 13px;
+            max-width: 320px;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* UTILITIES */
+        .hidden {
+            display: none !important;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* SCROLLBAR - Minimal */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--mono-silver);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--mono-light-gray);
+        }
+
+        /* ANIMATIONS */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: fadeIn 0.3s var(--transition);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+
+            .main-content {
+                margin-left: 70px;
+                padding: 16px;
+            }
+
+            .billing-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-item span:last-child {
+                display: none;
+            }
+
+            .logo-text {
+                font-size: 14px;
+            }
+        }
+
+        /* TABLE STYLING */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead tr {
+            background: var(--accent-subtle);
+        }
+
+        th {
+            padding: 12px 16px;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.05em;
+            color: var(--mono-medium-gray);
+            text-align: left;
+        }
+
+        td {
+            padding: 14px 16px;
+            font-size: 13px;
+            color: var(--mono-charcoal);
+            border-bottom: 1px solid var(--mono-pale-gray);
+        }
+
+        tbody tr:hover {
+            background: var(--accent-subtle);
+        }
+
+        /* BADGE */
+        .badge {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            display: inline-block;
+        }
+
+        .badge-success {
+            background: var(--mono-charcoal);
+            color: var(--mono-white);
+        }
+
+        .badge-warning {
+            background: var(--mono-beige);
+            color: var(--mono-charcoal);
+        }
+
+        .badge-info {
+            background: var(--accent-subtle);
+            color: var(--mono-gray);
+        }
+
+        /* LOGIN PAGE */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: linear-gradient(135deg, var(--mono-off-white) 0%, var(--mono-beige) 100%);
+        }
+
+        .login-box {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 48px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- LOGIN PAGE -->
+    <div id="login-page" class="login-container">
+        <div class="login-box">
+            <div style="text-align: center; margin-bottom: 32px;">
+                <h1 style="font-size: 32px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px;">YOCTRON</h1>
+                <p style="font-size: 13px; color: var(--mono-medium-gray); font-weight: 500;">Restaurant Management
+                    System</p>
+            </div>
+
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label">Role</label>
+                    <select id="login-role" required style="font-weight: 600;">
+                        <option value="">Select Role</option>
+                        <option value="admin">👑 Administrator</option>
+                        <option value="staff">👔 Staff / Waiter</option>
+                        <option value="captain">🎯 Captain</option>
+                        <option value="kitchen">👨‍🍳 Kitchen Staff</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" id="login-username" placeholder="Enter username" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="login-password" placeholder="Enter password" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; margin-top: 8px;">
+                    Sign In
+                </button>
+
+                <div style="margin-top: 24px; padding: 16px; background: var(--accent-subtle); border-radius: 8px;">
+                    <p
+                        style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--mono-medium-gray); margin-bottom: 8px;">
+                        Demo Credentials:</p>
+                    <div style="font-size: 12px; color: var(--mono-gray); line-height: 1.8;">
+                        <div><strong>Admin:</strong> admin / admin123</div>
+                        <div><strong>Staff:</strong> staff / staff123</div>
+                        <div><strong>Captain:</strong> captain / captain123</div>
+                        <div><strong>Kitchen:</strong> kitchen / kitchen123</div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="app-sidebar" style="display: none;">
+        <div class="logo">
+            <div class="logo-text">YOCTRON</div>
+            <div class="logo-version">v0.A1.03</div>
+        </div>
+        <nav class="nav-menu">
+            <div class="nav-item active" onclick="navigate('dashboard')">
+                <span class="nav-icon">◆</span>
+                <span>Dashboard</span>
+            </div>
+            <div class="nav-item" onclick="navigate('pos')">
+                <span class="nav-icon">◇</span>
+                <span>Order Station</span>
+            </div>
+            <div class="nav-item" onclick="navigate('kot')">
+                <span class="nav-icon">◈</span>
+                <span>Kitchen</span>
+            </div>
+            <div class="nav-item" onclick="navigate('tables')">
+                <span class="nav-icon">◉</span>
+                <span>Tables</span>
+            </div>
+            <div class="nav-item" onclick="navigate('inventory')">
+                <span class="nav-icon">◊</span>
+                <span>Inventory</span>
+            </div>
+            <div class="nav-item" onclick="navigate('crm')">
+                <span class="nav-icon">◐</span>
+                <span>Loyalty</span>
+            </div>
+            <div class="nav-item" onclick="navigate('online')">
+                <span class="nav-icon">◑</span>
+                <span>Online Orders</span>
+            </div>
+            <div class="nav-item" onclick="navigate('reports')">
+                <span class="nav-icon">◒</span>
+                <span>Analytics</span>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content" id="app-main" style="display: none;">
+        <div class="top-bar">
+            <h1 class="page-title" id="page-title">Dashboard</h1>
+            <div class="status-indicator">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="live-dot"></div>
+                    <span class="status-text">Live</span>
+                </div>
+                <select id="outlet-selector" onchange="switchOutlet()"
+                    style="width: auto; padding: 8px 12px; font-size: 12px;">
+                    <option value="outlet1">Main Outlet</option>
+                    <option value="outlet2">Mall Branch</option>
+                    <option value="outlet3">Airport Branch</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- DASHBOARD PAGE -->
+        <div id="dashboard" class="page active animate-in">
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                <div class="stat-card">
+                    <div class="stat-icon">₹</div>
+                    <div class="stat-label">Revenue Today</div>
+                    <div class="stat-value" id="stat-revenue">₹0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">◈</div>
+                    <div class="stat-label">Kitchen Load</div>
+                    <div class="stat-value" id="stat-kots">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">◑</div>
+                    <div class="stat-label">Online Queue</div>
+                    <div class="stat-value" id="stat-online">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">◐</div>
+                    <div class="stat-label">Members</div>
+                    <div class="stat-value" id="stat-customers">0</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 20px; letter-spacing: -0.01em;">Recent
+                    Orders</h3>
+                <div id="recent-orders"></div>
+            </div>
+        </div>
+
+        <!-- POS PAGE -->
+        <div id="pos" class="page">
+            <div class="billing-layout">
+                <div class="items-panel">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="font-size: 16px; font-weight: 600; letter-spacing: -0.01em;">Menu</h3>
+                        <input type="text" id="menu-search" placeholder="Search..."
+                            style="width: 240px; padding: 10px 14px; font-size: 13px;" oninput="filterMenu()">
+                    </div>
+                    <div id="menu-items"></div>
+                </div>
+
+                <div class="bill-panel">
+                    <div class="form-group">
+                        <label class="form-label">Table</label>
+                        <select id="bill-table"></select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Customer</label>
+                        <select id="bill-customer">
+                            <option value="">Walk-in</option>
+                        </select>
+                    </div>
+
+                    <div class="bill-items" id="bill-items">
+                        <div style="text-align: center; padding: 48px 20px; color: var(--mono-light-gray);">
+                            <div style="font-size: 32px; margin-bottom: 12px; opacity: 0.3;">◇</div>
+                            <div
+                                style="font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; font-size: 11px;">
+                                Empty Cart</div>
+                        </div>
+                    </div>
+
+                    <div class="bill-total">
+                        <div class="total-row">
+                            <span>Subtotal</span>
+                            <span id="bill-subtotal">₹0.00</span>
+                        </div>
+                        <div class="total-row">
+                            <span>CGST (2.5%)</span>
+                            <span id="bill-cgst">₹0.00</span>
+                        </div>
+                        <div class="total-row">
+                            <span>SGST (2.5%)</span>
+                            <span id="bill-sgst">₹0.00</span>
+                        </div>
+                        <div class="total-row">
+                            <span>Total</span>
+                            <span id="bill-total">₹0.00</span>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px;">
+                        <button class="btn btn-secondary" onclick="sendToKOT()">Push KOT</button>
+                        <button class="btn btn-primary" onclick="settleBill()">Settle Bill</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KOT PAGE -->
+        <div id="kot" class="page">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="font-size: 16px; font-weight: 600; letter-spacing: -0.01em;">Kitchen Display</h3>
+                    <div class="badge badge-info">
+                        <span id="kot-count">0</span> Active
+                    </div>
+                </div>
+                <div id="kot-list"></div>
+            </div>
+        </div>
+
+        <!-- TABLES PAGE -->
+        <div id="tables" class="page">
+            <div class="card">
+                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 20px; letter-spacing: -0.01em;">Floor Plan
+                </h3>
+                <div class="table-grid" id="tables-grid"></div>
+            </div>
+        </div>
+
+        <!-- INVENTORY PAGE -->
+        <div id="inventory" class="page">
+            <div class="card">
+                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 20px; letter-spacing: -0.01em;">Stock
+                    Management</h3>
+                <div id="inventory-list"></div>
+            </div>
+        </div>
+
+        <!-- CRM PAGE -->
+        <div id="crm" class="page">
+            <div class="card">
+                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 20px; letter-spacing: -0.01em;">Customer
+                    Loyalty</h3>
+                <div id="crm-list"></div>
+            </div>
+        </div>
+
+        <!-- ONLINE ORDERS PAGE -->
+        <div id="online" class="page">
+            <div class="card">
+                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 20px; letter-spacing: -0.01em;">Online
+                    Orders</h3>
+                <div id="online-list"></div>
+            </div>
+        </div>
+
+        <!-- REPORTS PAGE -->
+        <div id="reports" class="page">
+            <div class="card">
+                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 20px; letter-spacing: -0.01em;">Analytics
+                </h3>
+                <div id="reports-content"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- TOAST -->
+    <div id="toast" class="toast"></div>
+
+    <!-- MODAL -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script src="premium-menu.js"></script>
+</body>
+
+</html>
