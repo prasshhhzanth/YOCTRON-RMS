@@ -1,6 +1,8 @@
 # Yoctron RMS
 
 > A complete, Apple-inspired Restaurant Management System built with pure HTML, CSS, and JavaScript.
+# View it Live on 
+> https://prasshhhzanth.github.io/YOCTRON-RMS/
 
 ## 🚀 Features
 
@@ -104,5 +106,6 @@ MIT License - Feel free to use for personal or commercial projects.
 This is a demo project. Feel free to fork and customize for your needs!
 
 ---
+
 
 
