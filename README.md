@@ -36,26 +36,6 @@ Inspired by Apple.com's minimalist aesthetic:
 2. Open `index.html` in any modern web browser
 3. That's it! No build process required.
 
-## 🌐 GitHub Pages Deployment
-
-### Quick Setup:
-1. Rename `yoctron_minimal.html` to `index.html` (already done)
-2. Create a new repository on GitHub
-3. Push your code:
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit"
-   git remote add origin https://github.com/USERNAME/REPO_NAME.git
-   git branch -M main
-   git push -u origin main
-   ```
-4. Enable GitHub Pages in repository Settings → Pages
-5. Select `main` branch and `/ (root)` folder
-6. Your site will be live at: `https://USERNAME.github.io/REPO_NAME/`
-
-📖 **Detailed Guide:** See [github_deployment_guide.md](github_deployment_guide.md) for complete instructions.
-
 
 ## 🔗 QR Code Usage
 
@@ -92,6 +72,10 @@ Works on all modern browsers:
 
 ## 🎯 Key Features
 
+<img width="1895" height="906" alt="Screenshot 2025-12-23 151810" src="https://github.com/user-attachments/assets/25ad90bb-0e04-4995-b82a-21ab29161b2f" />
+<img width="1896" height="906" alt="Screenshot 2025-12-23 151843" src="https://github.com/user-attachments/assets/a62d90ad-bf3e-467f-94b9-aef5c4c76c1a" />
+<img width="1884" height="902" alt="Screenshot 2025-12-23 151905" src="https://github.com/user-attachments/assets/e642aaf1-9724-40ec-96a7-78a1d0443189" />
+
 ### For Customers
 ✅ Browse menu by categories  
 ✅ Add items to cart  
@@ -120,4 +104,5 @@ MIT License - Feel free to use for personal or commercial projects.
 This is a demo project. Feel free to fork and customize for your needs!
 
 ---
+
 
